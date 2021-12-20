@@ -1,0 +1,103 @@
+- name: install ssm agent on multiple os
+  hosts: all
+  become: true
+
+  tasks:
+    - name: install ssm agent in Amazon Linux 2, RHEL 7, and CentOS 7 (64 bit)
+      block:
+        - name: install ssm agent
+          yum:
+            name: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+            state: present
+            download_dir: /tmp
+
+        - name: enable and start ssm agent
+          systemd:
+            name: amazon-ssm-agent
+            state: started
+            enabled: yes
+      when: (ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_major_version'] == "2") or
+            (ansible_facts['distribution'] == "CentOS" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "8")) or
+            (ansible_facts['distribution'] == "RedHat" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "8"))
+
+    - name: install ssm agent in Amazon Linux, CentOS 6 and RHEL 6 (64 bit)
+      block: 
+        - name: install ssm agent
+          yum:
+            name: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+            state: present
+            download_dir: /tmp
+        
+        - name: start ssm agent
+          service:
+            name: amazon-ssm-agent
+            state: started
+            enabled: true
+      when: (ansible_facts['distribution'] == "Amazon" and (ansible_facts['distribution_major_version'] == "1" or ansible_facts['distribution_major_version'] == "2017")) or
+            (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
+            (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "6")
+
+    - name: install ssm agent in Debian 8, 9 and 10
+      block:        
+        - name: install ssm agent
+          apt:
+            deb: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+
+        - name: enable and start ssm agent
+          systemd:
+            name: amazon-ssm-agent
+            state: started
+            enabled: yes
+      when: (ansible_facts['distribution'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "10"))
+    
+    - name: install ssm agent in Ubuntu 16, 18 and 20
+      block:        
+        - name: install ssm agent
+          snap:
+            name: amazon-ssm-agent
+            classic: yes
+            state: present
+
+        - name: start ssm agent
+          systemd:
+            name: snap.amazon-ssm-agent.amazon-ssm-agent.service
+            state: started
+            enabled: yes
+      when: (ansible_facts['distribution'] == "Ubuntu" and (ansible_facts['distribution_major_version'] == "16" or ansible_facts['distribution_major_version'] == "18" or ansible_facts['distribution_major_version'] == "20"))
+    
+    - name: install ssm agent in Ubuntu 14
+      block:        
+        - name: install ssm agent
+          apt:
+            deb: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+
+        - name: enable and start ssm agent
+          service:
+            name: amazon-ssm-agent
+            state: started
+            enabled: true
+      when: (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] == "14")
+
+    - name: install ssm agent in SUSE 12
+      block:
+        - name: create tmp dir
+          file:
+            path: /tmp/ssm
+            state: directory
+          
+        - name: get ssm agent
+          get_url:
+            url: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+            dest: /tmp/ssm
+        
+        - name: install ssm agent
+          command: rpm --install amazon-ssm-agent.rpm
+          args:
+            chdir: /tmp/ssm
+
+        - name: enable and start ssm agent
+          systemd:
+            name: amazon-ssm-agent
+            state: started
+            enabled: yes
+      when: (ansible_facts['distribution'] == "SLES" and ansible_facts['distribution_major_version'] == "12")

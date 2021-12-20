@@ -1,0 +1,52 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateInstanceProfile",
+        "iam:ListInstanceProfilesForRole",
+        "iam:PassRole",
+        "iam:GetInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:ListRoles",
+        "ec2:DescribeIamInstanceProfileAssociations",
+        "ec2:DisassociateIamInstanceProfile",
+        "ec2:AssociateIamInstanceProfile"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "config:DescribeConfigurationRecorders",
+        "compute-optimizer:GetEnrollmentStatus",
+        "support:DescribeTrustedAdvisorChecks"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:UpdateServiceSetting",
+        "ssm:GetServiceSetting"
+      ],
+      "Resource": [
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsitem/ssm-patchmanager",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsitem/EC2",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsdata/ExplorerOnboarded",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsdata/Association",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsdata/OpsData-TrustedAdvisor",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsdata/ComputeOptimizer",
+        "arn:aws:ssm:*:*:servicesetting/ssm/opsdata/SupportCenterCase"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateServiceLinkedRole"
+      ],
+      "Resource": "arn:aws:iam::*:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM"
+    }
+  ]
+}
